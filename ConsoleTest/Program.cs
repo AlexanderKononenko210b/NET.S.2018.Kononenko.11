@@ -1,16 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Books;
-using NLog;
+using Books.Interfaces;
+using Books.Exceptions;
+using Books.Comparers;
+using Books.Loggers;
+using Books.Storages;
+using Books.Services;
+using Books.Predicates;
 
 namespace ConsoleTest
 {
     class Program
     {
-        private static readonly ILogger logger = new NLogLogger();
+        private static readonly ILog logger = new NLogLogger();
 
         static void Main(string[] args)
         {
@@ -18,7 +20,9 @@ namespace ConsoleTest
             {
                 var storage = new BinaryStorage();
 
-                var service = new BookListService(storage);
+                var service = new BookListService(logger);
+
+                service.ReadList(storage);
 
                 var book1 = new Book("978-0-7356-6745-7", "Jeffrey Richter",
                     "CLR via C#", "Microsoft Press", 2012, 826, new decimal(59.99));
@@ -103,6 +107,9 @@ namespace ConsoleTest
                 {
                     Console.WriteLine(item.ToString("G", cultereInfo));
                 }
+
+                Console.WriteLine(book1.GetHashCode() == book1.GetHashCode());
+                Console.WriteLine(book1.GetHashCode() == book2.GetHashCode());
             }
             catch (FormatException error)
             {

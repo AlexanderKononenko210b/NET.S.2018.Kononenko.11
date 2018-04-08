@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTest", "ConsoleTest\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookFormatExtension", "BookFormatExtension\BookFormatExtension.csproj", "{3667DDFD-294A-4B23-A141-56698DF01B94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTestExtansion", "ConsoleTestExtansion\ConsoleTestExtansion.csproj", "{DD0DA48C-D7A9-4FBA-AC8A-1A5E9BB7338F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BooksAndBooksFormatExtension.Test", "BooksAndBooksFormatExtension.Test\BooksAndBooksFormatExtension.Test.csproj", "{8841A2A0-E921-42BC-8396-8B77ED85F8FC}"
 EndProject
 Global
@@ -31,10 +29,6 @@ Global
 		{3667DDFD-294A-4B23-A141-56698DF01B94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3667DDFD-294A-4B23-A141-56698DF01B94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3667DDFD-294A-4B23-A141-56698DF01B94}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DD0DA48C-D7A9-4FBA-AC8A-1A5E9BB7338F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DD0DA48C-D7A9-4FBA-AC8A-1A5E9BB7338F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DD0DA48C-D7A9-4FBA-AC8A-1A5E9BB7338F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DD0DA48C-D7A9-4FBA-AC8A-1A5E9BB7338F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8841A2A0-E921-42BC-8396-8B77ED85F8FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8841A2A0-E921-42BC-8396-8B77ED85F8FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8841A2A0-E921-42BC-8396-8B77ED85F8FC}.Release|Any CPU.ActiveCfg = Release|Any CPU

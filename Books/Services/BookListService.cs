@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Books.Interfaces;
+using Books.Exceptions;
+using Books.Comparers;
+using Books.Predicates;
 
-namespace Books
+namespace Books.Services
 {
     /// <summary>
     /// Service which work with List of Book
@@ -13,7 +14,7 @@ namespace Books
     {
         #region Field and Properties
 
-        private IStorageService<List<Book>> storageService;
+        private ILog logger;
 
         private List<Book> listBooks = new List<Book>();
 
@@ -26,15 +27,13 @@ namespace Books
         /// <summary>
         /// Constructor BookListService
         /// </summary>
-        /// <param name="serviceStorage">instance type IStorageService</param>
-        public BookListService(IStorageService<List<Book>> serviceStorage)
+        /// <param name="logger">logger</param>
+        public BookListService(ILog logger)
         {
-            this.storageService = serviceStorage;
-
-            listBooks = this.storageService.GetList();
+            this.logger = logger;
         }
 
-        #endregion
+        #endregion Constructor
 
         #region Methods
 
@@ -47,22 +46,21 @@ namespace Books
         {
             if (book == null)
             {
-                throw new ArgumentNullException($"Argument {nameof(listBooks)} is null");
+                logger.WriteInfo($"Argument {nameof(listBooks)} is null");
+
+                throw new ArgumentNullException($"Argument {nameof(listBooks)} is null in method {nameof(AddBook)}");
             }
 
             var predicateByIsbn = new SearchByIsbn(book.ISBN);
 
             if (this.FindBookByTag(predicateByIsbn) != null)
             {
+                logger.WriteInfo($"Book {nameof(book)} already exist in List in method {nameof(AddBook)}");
+
                 throw new ExistInStorageException($"Book already exist in List");
             }
 
             listBooks.Add(book);
-
-            if (this.FindBookByTag(predicateByIsbn) == null)
-            {
-                throw new InvalidOperationException($"Operation add is not dune");
-            }
 
             return book;
         }
@@ -76,6 +74,8 @@ namespace Books
         {
             if (book == null)
             {
+                logger.WriteInfo($"Argument {nameof(listBooks)} is null in method {nameof(RemoveBook)}");
+
                 throw new ArgumentNullException($"Argument {nameof(listBooks)} is null");
             }
 
@@ -83,15 +83,12 @@ namespace Books
 
             if (this.FindBookByTag(predicateByIsbn) == null)
             {
-                throw new ExistInStorageException($"Book does not exist in List");
+                logger.WriteInfo($"Book {nameof(book)} does not exist in List in method {nameof(RemoveBook)}");
+
+                throw new ExistInStorageException($"Book {nameof(book)} does not exist in List");
             }
 
             listBooks.Remove(book);
-
-            if (this.FindBookByTag(predicateByIsbn) != null)
-            {
-                throw new InvalidOperationException($"Operation delete is not dune");
-            }
 
             return book;
         }
@@ -101,10 +98,12 @@ namespace Books
         /// </summary>
         /// <param name="tag">predicate for search</param>
         /// <returns>find object</returns>
-        public Book FindBookByTag(IFindBook tag)
+        public Book FindBookByTag(IPredicate tag)
         {
             if (tag == null)
             {
+                logger.WriteInfo($"Argument {nameof(tag)} is null in method {nameof(FindBookByTag)}");
+
                 throw new ArgumentNullException($"Argument {nameof(tag)} is null");
             }
 
@@ -126,6 +125,8 @@ namespace Books
         {
             if (tag == null)
             {
+                logger.WriteInfo($"Argument {nameof(tag)} is null in method {nameof(SortBooksByTag)}");
+
                 throw new ArgumentNullException($"Argument {nameof(tag)} is null");
             }
             var countIteration = listBooks.Count;
@@ -163,11 +164,41 @@ namespace Books
         }
 
         /// <summary>
+        /// Method for read list Books
+        /// </summary>
+        public void ReadList(IStorageService<List<Book>> storageService)
+        {
+            try
+            {
+                listBooks = storageService.GetList();
+            }
+            catch (Exception error)
+            {
+                logger.WriteInfo(error.Message);
+
+                logger.WriteError(error.StackTrace);
+
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Method for save list Books
         /// </summary>
-        public void SaveList()
+        public void SaveList(IStorageService<List<Book>> storageService)
         {
-            storageService.SaveList(listBooks);
+            try
+            {
+                storageService.SaveList(listBooks);
+            }
+            catch(Exception error)
+            {
+                logger.WriteInfo(error.Message);
+
+                logger.WriteError(error.StackTrace);
+
+                throw;
+            }
         }
 
         #endregion Methods

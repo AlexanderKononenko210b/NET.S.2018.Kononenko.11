@@ -1,32 +1,27 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using Books.Exceptions;
 
 namespace Books
 {
     /// <summary>
     /// Class Book
     /// </summary>
-    public class Book : IComparable<Book>, IEquatable<Book>, IFormattable
+    public class Book : IComparable, IComparable<Book>, IEquatable<Book>, IFormattable
     {
         #region Fields
 
         private readonly string isbn;
 
-        private string autor;
+        private readonly string autor;
 
-        private string name;
+        private readonly string name;
 
-        private string publish;
+        private readonly string publish;
 
-        private int year;
+        private readonly int year;
 
-        private int countpage;
+        private readonly int countPage;
 
         private decimal price;
 
@@ -45,23 +40,6 @@ namespace Books
         public string Autor
         {
             get => autor;
-            set
-            {
-                if (String.IsNullOrEmpty(value))
-                {
-                    throw new BookFormatException($"Value {nameof(Autor)} is not entered!");
-                }
-                else
-                {
-                    string regex = @"^[A-Z]{1}[a-z]{1,15}[ ]{1}[A-Z]{1}[a-z]{1,15}";
-                    if (!Regex.IsMatch(value, regex))
-                    {
-                        throw new BookFormatException($"Value {nameof(Autor)} is not correct! Example Jeffrey Richter");
-                    }
-
-                    autor = value;
-                }
-            }
         }
 
         /// <summary>
@@ -70,23 +48,6 @@ namespace Books
         public string Name
         {
             get => name;
-            set
-            {
-                if (String.IsNullOrEmpty(value))
-                {
-                    throw new BookFormatException($"Value {nameof(Name)} is not entered!");
-                }
-                else
-                {
-                    string regex = @".{3,50}";
-                    if (!Regex.IsMatch(value, regex))
-                    {
-                        throw new BookFormatException($"Value {nameof(Name)} is not correct! Example CLR via C#");
-                    }
-
-                    name = value;
-                }
-            }
         }
 
         /// <summary>
@@ -95,23 +56,6 @@ namespace Books
         public string Publish
         {
             get => publish;
-            set
-            {
-                if (String.IsNullOrEmpty(value))
-                {
-                    throw new BookFormatException($"Value {nameof(Publish)} is not entered!");
-                }
-                else
-                {
-                    string regex = @".{1,50}";
-                    if (!Regex.IsMatch(value, regex))
-                    {
-                        throw new BookFormatException($"Value {nameof(Publish)} is not correct! Example Microsoft Press");
-                    }
-
-                    publish = value;
-                }
-            }
         }
 
         /// <summary>
@@ -120,15 +64,6 @@ namespace Books
         public int Year
         {
             get => year;
-            set
-            {
-                if (value < 1900 || value > DateTime.Now.Year)
-                {
-                    throw new BookFormatException($"Value {nameof(Year)} is not correct! Thay can be more than 1900 and less {DateTime.Now.Year}");
-                }
-
-                year = value;
-            }
         }
 
         /// <summary>
@@ -136,16 +71,7 @@ namespace Books
         /// </summary>
         public int CountPage
         {
-            get => countpage;
-            set
-            {
-                if (value < 0)
-                {
-                    throw new BookFormatException($"Value {nameof(CountPage)} is not correct! Thay can be more than 0");
-                }
-
-                countpage = value;
-            }
+            get => countPage;
         }
 
         /// <summary>
@@ -182,11 +108,11 @@ namespace Books
         public Book(string isbnNumber, string autor, string name, string publish, int year, int count, decimal price)
         {
             this.isbn = isbnNumber;
-            this.Autor = autor;
-            this.Name = name;
-            this.Publish = publish;
-            this.Year = year;
-            this.CountPage = count;
+            this.autor = autor;
+            this.name = name;
+            this.publish = publish;
+            this.year = year;
+            this.countPage = count;
             this.Price = price;
         }
 
@@ -205,7 +131,9 @@ namespace Books
 
             if (ReferenceEquals(this, book)) return true;
 
-            if (!this.ISBN.Equals(book.ISBN)) return false;
+            if (!(this.ISBN == book.ISBN && this.Autor == book.Autor
+                && this.Name == book.Name && this.Publish == book.Publish
+                && this.Year == book.Year && this.CountPage == book.CountPage)) return false;
 
             return true;
         }
@@ -232,7 +160,9 @@ namespace Books
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return this.ISBN.GetHashCode();
+            return this.ISBN.GetHashCode() + this.Autor.GetHashCode()
+                + this.Name.GetHashCode() + this.Publish.GetHashCode() 
+                + this.Year.GetHashCode() + this.CountPage.GetHashCode();
         }
 
         /// <summary>
@@ -249,6 +179,27 @@ namespace Books
 
         /// <summary>
         /// Implement method CompareTo interface IComparable
+        /// </summary>
+        /// <param name="obj">object for compare</param>
+        /// <returns>result compare</returns>
+        public int CompareTo(object obj)
+        {
+            if (obj == null) return -1;
+
+            if (this.Equals(obj)) return 0;
+
+            var castBook = obj as Book;
+
+            if ((obj as Book) == null)
+            {
+                throw new InvalidCastException($"Argument {nameof(obj)} does not cast in Book");
+            }
+
+            return this.GetNumberBook() - castBook.GetNumberBook();
+        }
+
+        /// <summary>
+        /// Implement method CompareTo interface IComparable<paramref name="otherBook"/>
         /// </summary>
         /// <param name="otherBook">object for compare</param>
         /// <returns>result compare</returns>
@@ -278,6 +229,12 @@ namespace Books
             return (int)((i + (float)j / 10) * 10);
         }
 
+        /// <summary>
+        /// Implement interface IFormattable
+        /// </summary>
+        /// <param name="format">string indicator format</param>
+        /// <param name="formatProvider">provider format</param>
+        /// <returns></returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {
             if (string.IsNullOrWhiteSpace(format)) return "G";

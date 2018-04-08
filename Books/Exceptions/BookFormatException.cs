@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Books
+namespace Books.Exceptions
 {
     /// <summary>
     /// Exception connected with input format value properties

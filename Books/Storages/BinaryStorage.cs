@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Books.Interfaces;
+using System.Configuration;
 
-namespace Books
+namespace Books.Storages
 {
     /// <summary>
     /// Binary storage for book`s list
     /// </summary>
     public class BinaryStorage : IStorageService<List<Book>>
     {
-        private readonly string sourcePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SourceData.dat");
+        string sourcePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigurationManager.AppSettings["filePath"]);
 
         /// <summary>
         /// Method for get list of book
@@ -57,6 +56,8 @@ namespace Books
         /// <param name="listBook"></param>
         public void SaveList(List<Book> listBook)
         {
+            string sourcePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigurationManager.AppSettings["filePath"]);
+
             if (listBook == null)
             {
                 throw new ArgumentNullException($"Argument {nameof(listBook)} is null");

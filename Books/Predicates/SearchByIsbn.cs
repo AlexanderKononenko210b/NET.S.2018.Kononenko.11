@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Books.Interfaces;
 
-namespace Books
+namespace Books.Predicates
 {
     /// <summary>
     /// Class predicate for search book by ISBN number
     /// </summary>
-    public class SearchByIsbn : IFindBook
+    public class SearchByIsbn : IPredicate
     {
         private readonly string isbn;
 

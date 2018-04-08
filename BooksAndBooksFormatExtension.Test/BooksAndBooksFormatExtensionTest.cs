@@ -3,6 +3,10 @@ using System.Globalization;
 using NUnit.Framework;
 using Books;
 using BookFormatExtension;
+using Books.Interfaces;
+using Books.Loggers;
+using Books.Storages;
+using Books.Services;
 
 namespace BooksAndBooksFormatExtension.Test
 {
@@ -12,6 +16,8 @@ namespace BooksAndBooksFormatExtension.Test
     [TestFixture]
     public class BooksAndBooksFormatExtensionTest
     {
+        private readonly ILog logger = new NLogLogger();
+
         /// <summary>
         /// Test implement interface IFormattable class Book
         /// </summary>
@@ -25,7 +31,9 @@ namespace BooksAndBooksFormatExtension.Test
         {
             var storage = new BinaryStorage();
 
-            var service = new BookListService(storage);
+            var service = new BookListService(logger);
+
+            service.ReadList(storage);
 
             var assert1 = service.ListBooks[0].ToString(format, CultureInfo.GetCultureInfo("en-IN"));
 
@@ -47,9 +55,11 @@ namespace BooksAndBooksFormatExtension.Test
         {
             var storage = new BinaryStorage();
 
-            var service = new BookListService(storage);
+            var service = new BookListService(logger);
 
-            var customFormat = new BookFormatProvider();
+            service.ReadList(storage);
+
+            var customFormat = new BookFormatProvider(logger);
 
             var assert1 = String.Format(customFormat, format, service.ListBooks[0]);
 
@@ -66,9 +76,11 @@ namespace BooksAndBooksFormatExtension.Test
         {
             var storage = new BinaryStorage();
 
-            var service = new BookListService(storage);
+            var service = new BookListService(logger);
 
-            var customFormat = new BookFormatProvider();
+            service.ReadList(storage);
+
+            var customFormat = new BookFormatProvider(logger);
 
             Assert.Throws<FormatException>(() => String.Format(customFormat, format, service.ListBooks[0]));
         }

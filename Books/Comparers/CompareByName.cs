@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Books.Interfaces;
 
-namespace Books
+namespace Books.Comparers
 {
     /// <summary>
     /// Compare elements List by first Literal name book alphabet

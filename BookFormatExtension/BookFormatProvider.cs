@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Books;
+using Books.Interfaces;
 
 namespace BookFormatExtension
 {
@@ -15,11 +13,15 @@ namespace BookFormatExtension
     {
         private IFormatProvider parent;
 
-        public BookFormatProvider() : this(CultureInfo.CurrentCulture) { }
+        private ILog logger;
 
-        public BookFormatProvider(IFormatProvider parent)
+        public BookFormatProvider(ILog logger) : this(CultureInfo.CurrentCulture, logger) { }
+
+        public BookFormatProvider(IFormatProvider parent, ILog logger)
         {
             this.parent = parent;
+
+            this.logger = logger;
         }
 
         public string Format(string format, object argument, IFormatProvider formatProvider)
@@ -31,7 +33,7 @@ namespace BookFormatExtension
 
             if (formatProvider == null)
             {
-                throw new ArgumentNullException($"Argument`s {nameof(formatProvider)} is null");
+                formatProvider = CultureInfo.CurrentCulture;
             }
 
             if (argument.GetType() != typeof(Book))
@@ -42,7 +44,11 @@ namespace BookFormatExtension
                 }
                 catch (FormatException error)
                 {
-                    throw new FormatException($"The format of {nameof(format)} is invalid.");
+                    logger.WriteInfo($"The format of {nameof(argument)} is invalid.");
+
+                    logger.WriteFatal(error.StackTrace);
+
+                    throw new FormatException($"The format of {nameof(argument)} is invalid.");
                 }
             }
 
@@ -56,7 +62,11 @@ namespace BookFormatExtension
                 }
                 catch (FormatException error)
                 {
-                    throw new FormatException($"The format of '{format}' is invalid.");
+                    logger.WriteInfo($"The format of {nameof(format)} is invalid.");
+
+                    logger.WriteFatal(error.StackTrace);
+
+                    throw new FormatException($"The format of '{nameof(format)}' is invalid.");
                 }
             }
 
@@ -101,7 +111,7 @@ namespace BookFormatExtension
         {
             var resultType = argument as IFormattable;
 
-            if(resultType != null) return ((IFormattable)argument).ToString(format, CultureInfo.CurrentCulture);
+            if(resultType != null) return ((IFormattable)argument).ToString(format, parent);
 
             return argument.ToString();
         }
